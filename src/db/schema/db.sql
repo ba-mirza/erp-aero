@@ -18,7 +18,8 @@ VALUES
 CREATE TABLE users (
   userId INT PRIMARY KEY AUTO_INCREMENT,
   id VARCHAR(255) NOT NULL,
-  _password VARCHAR(255) NOT NULL
+  _password VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL
 );
 
 INSERT INTO users (id, _password)
