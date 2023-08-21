@@ -11,6 +11,8 @@ import {
 } from "../controllers/file";
 import { fileStorageEngine } from "../helpers";
 
+import { isAuthenticated } from "../middlewares";
+
 const upload = multer({ storage: fileStorageEngine });
 
 export default (router: express.Router) => {

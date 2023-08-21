@@ -5,14 +5,36 @@ import {
   deleteFileByIdFromDB,
   getFileByIdDB,
   getFileForDownloadDB,
+  getCountFilesDB,
   uploadFileToDB,
+  getListFilesWithPaginationDB,
 } from "../db";
 import { filepath } from "../helpers";
 
 export const getListFiles = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const list_size = 10 || parseInt(req.body.query.listSize);
+    const page = 1 || parseInt(req.body.query.page);
+
+    const countRow: any = await getCountFilesDB();
+    const totalCount = countRow[0].total;
+    const totalPages = Math.ceil(totalCount / list_size);
+
+    const fileRow = await getListFilesWithPaginationDB(page - 1, list_size);
+
+    res.json({
+      files: fileRow,
+      totalPages: totalPages,
+      totalCount: totalCount,
+    });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+};
 
 export const getFile = async (req: express.Request, res: express.Response) => {
   try {
@@ -23,7 +45,7 @@ export const getFile = async (req: express.Request, res: express.Response) => {
       return res.sendStatus(404).json({ error: "File not found" }).end();
     }
 
-    return res.status(200).json(checkFileDB.fileRow[0]).end();
+    return res.status(200).json(checkFileDB.fileRows[0]).end();
   } catch (error) {
     console.log(error);
     res.sendStatus(400).json({ error: "Something went wrong" });
@@ -42,7 +64,7 @@ export const getFileForDownload = async (
       res.sendStatus(404).json({ error: "File not found" });
     }
 
-    const filename = file.fileRow[0].file_name;
+    const filename = file.fileRows[0].file_name;
     const fullpath = `${filepath}/${filename}`;
 
     res.download(fullpath, filename, (err) => {
@@ -95,7 +117,7 @@ export const deleteFileById = async (
     if (!checkFileDB.fileId) {
       return res.status(404).json({ error: "File not found" });
     }
-    const filename = checkFileDB.fileRow[0].file_name;
+    const filename = checkFileDB.fileRows[0].file_name;
     const fullPath = `${filepath}/${filename}`;
 
     fs.unlink(fullPath, (err) => {
