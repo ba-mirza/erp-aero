@@ -1,6 +1,7 @@
-import { createUser } from "db";
 import express from "express";
-import { encrypted, random } from "helpers";
+
+import { createUser, getInfo } from "../db";
+import { encrypted, random } from "../helpers";
 
 export const signIn = async (req: express.Request, res: express.Response) => {};
 
@@ -27,4 +28,12 @@ export const signUp = async (req: express.Request, res: express.Response) => {
 export const getUserInfo = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const userId = await getInfo();
+    res.send(userId);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+};
