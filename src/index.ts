@@ -1,6 +1,8 @@
 import express from "express";
 import cors, { CorsOptions } from "cors";
 import bodyParser from "body-parser";
+import session from "express-session";
+
 import router from "./router";
 
 const corsOptions: CorsOptions = {
@@ -14,6 +16,7 @@ const app = express();
 // Разрешение доступа с любого домена
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(session({ secret: "auth", resave: false, saveUninitialized: false }));
 
 app.use("/", router());
 

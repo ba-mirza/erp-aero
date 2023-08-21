@@ -50,14 +50,35 @@ export const deleteFileByIdFromDB = async (id: string) => {
   return fileRow;
 };
 
-export const createUser = async (id: string, auth: any) => {
+export const createUser = async (
+  id: string,
+  auth: { token: string; password: string }
+) => {
   const [fileRow] = await pool.query(
-    `INSERT INTO users (id, _password) VALUES (?, ?)`,
-    [id, auth.password]
+    `INSERT INTO users (id, _password, token) VALUES (?, ?, ?)`,
+    [id, auth.password, auth.token]
   );
+  return fileRow;
 };
 
-export const getInfo = async () => {
-  const [fileRow] = await pool.query(`SELECT * FROM users WHERE userId = 1`);
+export const getInfo = async (id?: string) => {
+  const [fileRow] = await pool.query(`SELECT * FROM users WHERE userId = ?`, [
+    id,
+  ]);
+  return fileRow;
+};
+
+export const existingUserDB = async (id: string) => {
+  const [fileRow]: any = await pool.query(`SELECT * FROM users WHERE id = ?`, [
+    id,
+  ]);
+  return fileRow;
+};
+
+export const getUserBySession = async (session: string) => {
+  const [fileRow]: any = await pool.query(
+    `SELECT * FROM users WHERE token = ?`,
+    [session]
+  );
   return fileRow;
 };
